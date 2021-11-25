@@ -1,0 +1,29 @@
+{
+  "db": {
+    "uri": "mongodb://localhost:27001/db",
+    "name": "db",
+    "access": {
+      "collections": [
+        "articles",
+        "blog",
+        "categories",
+        "products",
+        "page"
+      ]
+    }
+  },
+  "cors": {
+    "allow": [
+        "http://localhost:3000"
+    ]
+  },
+  "languages": {
+    "initial": "tr",
+    "items": [
+      { "code": "tr-TR", "iso": "TR", "initial": true, "prefix":"" },
+      { "code": "en-EN", "iso": "EN" },
+      { "code": "ru-RU", "iso": "RU" }
+
+    ]
+  }
+}

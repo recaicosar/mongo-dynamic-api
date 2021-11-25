@@ -1,2 +1,6 @@
 .env
 web.config
+node_modules
+yarn.lock
+config
+iisnode
