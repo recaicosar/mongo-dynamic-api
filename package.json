@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "build": "webpack --mode production --progress",
-    "clean": "rmdir /s /q node_modules && rmdir /s /q api",
+    "clean": "rmdir /s /q node_modules",
     "reinstall": "npm run clean && npm install",
     "rebuild": "npm run clean && npm install && npm run build",
     "start": "node api/index.js",
@@ -15,10 +15,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.6",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongodb": "^4.1.2",
+    "mongodb": "^3.6.0",
     "nodemon": "^2.0.12"
   },
   "devDependencies": {

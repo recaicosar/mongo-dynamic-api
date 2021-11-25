@@ -1,11 +1,12 @@
-require('dotenv').config();
-const express = require("express"),
-      cors = require("cors"),
-      app = express(),
-      { MongoClient, paramToQuery, paramToRequest } = require("./utils");
+//require('dotenv').config();
+const config = require('config'),
+  express = require("express"),
+  cors = require("cors"),
+  app = express(),
+  { MongoClient, paramToQuery, paramToRequest } = require("./utils");
 
 
-      let whitelist = process.env.ALLOW;
+      let whitelist = config.get('cors.allow');
       let corsOptionsDelegate = function (req, callback) {
         let corsOptions;
         if (whitelist.indexOf(req.header('Origin')) !== -1) {
@@ -16,6 +17,8 @@ const express = require("express"),
         callback(null, corsOptions) // callback expects two parameters: error and options
       }
 
+
+
      let router = require("express").Router();
 
 //app.use(cors(corsOptions));
@@ -23,21 +26,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));   
 app.use('/favicon.ico', express.static('api/favicon.ico'));
 
-const uri = process.env.MONGO_URI,
-      db = process.env.MONGO_DB,
-      PORT = process.env.PORT || 8080,
-      accessCollections = process.env.ACCESS_COLLECTIONS;
-
-async function getAPI(param,query) {
+const uri = config.get('db.uri'),
+  db = config.get('db.name'),
+  PORT = process.env.PORT || 8080,
+  accessCollections = config.get('db.access.collections'),
+  languages = config.get('languages');
+  
+async function getAPI(dbPrefix, param ,query) {
 
    const client = new MongoClient(uri,{ useUnifiedTopology: true, useNewUrlParser: true});
    if (!client) return;
+
 
   try {
     let cursor=[];
     if(accessCollections.indexOf(param.collection) != -1) {
    await client.connect();    
-    const  database = client.db(db),
+      
+      
+      const database = client.db(`${db}${dbPrefix}`),
           Collection = database.collection(param.collection),
           paramQuery = paramToQuery(param),
           options = {
@@ -83,10 +90,12 @@ async function getAPI(param,query) {
   finally { await client.close() }    
 }
 
-router.get("*", cors(corsOptionsDelegate), function (req, res,next) {
-    const {param,query} = paramToRequest(req);
-    if(accessCollections.indexOf(param.collection) != -1) 
-      getAPI(param,query).then(data => res.send(data));
+router.get("*", cors(corsOptionsDelegate), function (req, res, next) {
+  const { param, query, dbPrefix } =paramToRequest(req,languages);
+
+  if (accessCollections.indexOf(param.collection) != -1) {
+    getAPI(dbPrefix, param, query).then(data => res.send(data));
+  }
       else
       res.send({ data:{ items:[] } });
 

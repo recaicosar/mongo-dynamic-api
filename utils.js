@@ -55,15 +55,28 @@ const paramToQuery = (param) => {
       return param;
 
 },
-     paramToRequest = (req) => {
+  paramToRequest = (req,lang) => {
+    let languages = lang;
     let params = req.params[0];
+    
+    urlParams = params
+      .replace(/^.*:\/\//i, '')
+      .split('/')
+      .filter(n => n);
 
-    params = params
-    .replace(/^.*:\/\//i, '')
-    .split('/')
-    .filter(n => n)
-    .map((item,i) => {return {[(i==0) ? "collection" : "id"] : item}});
-  
+
+    
+    let firstPath = urlParams[0];
+      let lng = languages.items.find(({code, iso}) => ((code.toLowerCase() === firstPath.toLowerCase() || iso.toLowerCase() === firstPath.toLowerCase())))          
+          if (!lng) 
+      lng = languages.items.find(({ initial }) => initial);
+    let dbPrefix = (lng.hasOwnProperty('prefix')) ? lng.prefix : lng.iso;
+    dbPrefix = (dbPrefix !== "") ? `_${dbPrefix}` : dbPrefix;
+
+    params = urlParams.filter(item => lng.iso.toLowerCase() !==item.toLowerCase())
+      .map((item, i) => { return { [(i == 0) ? "collection" : "id"]: item } });
+
+
     let newObj = {};
     params.forEach(item => {
       for (const [key, value] of Object.entries(item)) 
@@ -75,7 +88,7 @@ const paramToQuery = (param) => {
       for (const [key, value] of Object.entries(newObj))  
       (value.length == 1) && (newObj[key] = value[0])
 
-      return { param : newObj, query : req.query }
+      return { dbPrefix, param : newObj, query : req.query }
 }
 
   module.exports ={
