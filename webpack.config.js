@@ -30,6 +30,9 @@ module.exports = {
             }
         }]
     },
+    externals: {
+        "saslprep": "require('saslprep')"
+    },
     resolveLoader: {
         modules: [
             __dirname + '/node_modules'

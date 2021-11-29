@@ -4,3 +4,5 @@ node_modules
 yarn.lock
 config
 iisnode
+/api/index.js
+/api/index.js.LICENSE.txt
